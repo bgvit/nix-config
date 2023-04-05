@@ -105,19 +105,35 @@
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
   
+  # virtualisation.docker = { 
+  #   enable = true;
+  # };
   virtualisation.docker.rootless = {
     enable = true;
     setSocketVariable = true;
+  };
+
+  # Add NUR: https://github.com/nix-community/NUR
+  nixpkgs.config.packageOverrides = pkgs: {
+    nur = import (builtins.fetchTarball "https://github.com/nix-community/NUR/archive/master.tar.gz") {
+      inherit pkgs;
+    };
   };
 
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
+    libsForQt5.ark
+    nix-update
     kitty
     home-manager
     wget
+    service-wrapper
     curl
+    lsof
+    busybox
+    stow
     gnupg
     exa
     bat
@@ -131,7 +147,8 @@
     tdesktop
     calibre
     spotify
-    youtube-dl
+    vlc
+    yt-dlp
     droidcam
     temurin-bin-11
     kotlin
@@ -142,23 +159,35 @@
     elmPackages.elm
     neovim
     vscode
+    redli
+    redis
     jetbrains.idea-community
     jetbrains.idea-ultimate
     gradle
     maven
     android-tools
     dbeaver
+    postman
     docker
     docker-compose
+    slack
+    discord
+    teams
+    cinny-desktop
+    graalvm17-ce
+    krita
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   # programs.mtr.enable = true;
-  # programs.gnupg.agent = {
-  #   enable = true;
-  #   enableSSHSupport = true;
-  # };
+  programs.gnupg.agent = {
+    enable = true;
+    enableSSHSupport = true;
+  };
+
+  # Why do I get an error message about ca.desrt.dconf or dconf.service? https://nix-community.github.io/home-manager/index.html
+  programs.dconf.enable = true;
 
   # List services that you want to enable:
   
@@ -167,7 +196,7 @@
 
   
   # enable DRM from nvidia: this is a requirement to activate wayland
-  hardware.nvidia.modesetting.enable = true;
+  # hardware.nvidia.modesetting.enable = true;
 
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
